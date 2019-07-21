@@ -1,0 +1,36 @@
+version: "3"
+
+services: 
+  golang:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports: 
+      - 8080:8080
+    depends_on: 
+      - mysql
+    networks: 
+      - ip-recorder
+    links:
+      - mysql:mysql_host
+    tty: true
+    environment: 
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_PASS=$MYSQL_PASS
+      - IP_RECORDER_USERNAME=$IP_RECORDER_USERNAME
+      - IP_RECORDER_PASSWORD=$IP_RECORDER_PASSWORD
+  
+  mysql:
+    image: mysql:5.7
+    expose: 
+      - 3306
+    environment: 
+      MYSQL_ROOT_PASSWORD: $MYSQL_PASS
+    networks: 
+      - ip-recorder
+    volumes:
+      - /opt/mysql_data:/var/lib/mysql
+
+networks: 
+  ip-recorder:
+    driver: bridge
